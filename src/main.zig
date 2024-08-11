@@ -2,57 +2,63 @@
 const std = @import("std");
 const rl = @import("raylib");
 
-fn genPlaneMesh(tile_x_pos: u32, tile_y_pos: u32, tex_cols: u32, tex_rows: u32) rl.Mesh {
+fn genPlaneMesh() rl.Mesh {
+    return genBasicMesh(2, 4, 6);
+}
+
+fn addQuad(index: u32, mesh: *rl.Mesh) void {
+    mesh.vertices[index + 0] = 0.0;
+    mesh.vertices[index + 1] = 0.0;
+    mesh.vertices[index + 2] = 0.0;
+    mesh.normals[index + 0] = 0.0;
+    mesh.normals[index + 1] = 1.0;
+    mesh.normals[index + 2] = 0.0;
+
+    mesh.vertices[index + 3] = 0.0;
+    mesh.vertices[index + 4] = 0.0;
+    mesh.vertices[index + 5] = 1.0;
+    mesh.normals[index + 3] = 0.0;
+    mesh.normals[index + 4] = 1.0;
+    mesh.normals[index + 5] = 0.0;
+
+    mesh.vertices[index + 6] = 1.0;
+    mesh.vertices[index + 7] = 0.0;
+    mesh.vertices[index + 8] = 1.0;
+    mesh.normals[index + 6] = 0.0;
+    mesh.normals[index + 7] = 1.0;
+    mesh.normals[index + 8] = 0.0;
+
+    mesh.vertices[index + 9] = 1.0;
+    mesh.vertices[index + 10] = 0.0;
+    mesh.vertices[index + 11] = 0.0;
+    mesh.normals[index + 9] = 0.0;
+    mesh.normals[index + 10] = 1.0;
+    mesh.normals[index + 11] = 0.0;
+
+    mesh.indices[index + 0] = 0;
+    mesh.indices[index + 1] = 1;
+    mesh.indices[index + 2] = 2;
+
+    mesh.indices[index + 3] = 0;
+    mesh.indices[index + 4] = 2;
+    mesh.indices[index + 5] = 3;
+}
+
+fn addTextCoords(mesh: *rl.Mesh, index: u32, tile_x_pos: u32, tile_y_pos: u32, tex_cols: u32, tex_rows: u32) void {
     const tile_width: f32 = (1.0 / @as(f32, @floatFromInt(tex_cols)));
     const tile_height: f32 = (1.0 / @as(f32, @floatFromInt(tex_rows)));
 
-    var mesh = genBasicMesh(2, 4, 6);
+    mesh.texcoords[index + 0] = @as(f32, @floatFromInt(tile_x_pos)) * tile_width;
+    mesh.texcoords[index + 1] = @as(f32, @floatFromInt(tile_y_pos)) * tile_height;
 
-    mesh.vertices[0] = 0.0;
-    mesh.vertices[1] = 0.0;
-    mesh.vertices[2] = 0.0;
-    mesh.normals[0] = 0.0;
-    mesh.normals[1] = 1.0;
-    mesh.normals[2] = 0.0;
-    mesh.texcoords[0] = @as(f32, @floatFromInt(tile_x_pos)) * tile_width;
-    mesh.texcoords[1] = @as(f32, @floatFromInt(tile_y_pos)) * tile_height;
+    mesh.texcoords[index + 2] = @as(f32, @floatFromInt(tile_x_pos)) * tile_width;
+    mesh.texcoords[index + 3] = (@as(f32, @floatFromInt(tile_y_pos)) + 1) * tile_height;
 
-    mesh.vertices[3] = 0.0;
-    mesh.vertices[4] = 0.0;
-    mesh.vertices[5] = 1.0;
-    mesh.normals[3] = 0.0;
-    mesh.normals[4] = 1.0;
-    mesh.normals[5] = 0.0;
-    mesh.texcoords[2] = @as(f32, @floatFromInt(tile_x_pos)) * tile_width;
-    mesh.texcoords[3] = (@as(f32, @floatFromInt(tile_y_pos)) + 1) * tile_height;
+    mesh.texcoords[index + 4] = (@as(f32, @floatFromInt(tile_x_pos)) + 1) * tile_width;
+    mesh.texcoords[index + 5] = (@as(f32, @floatFromInt(tile_y_pos)) + 1) * tile_height;
 
-    mesh.vertices[6] = 1.0;
-    mesh.vertices[7] = 0.0;
-    mesh.vertices[8] = 1.0;
-    mesh.normals[6] = 0.0;
-    mesh.normals[7] = 1.0;
-    mesh.normals[8] = 0.0;
-    mesh.texcoords[4] = (@as(f32, @floatFromInt(tile_x_pos)) + 1) * tile_width;
-    mesh.texcoords[5] = (@as(f32, @floatFromInt(tile_y_pos)) + 1) * tile_height;
-
-    mesh.vertices[9] = 1.0;
-    mesh.vertices[10] = 0.0;
-    mesh.vertices[11] = 0.0;
-    mesh.normals[9] = 0.0;
-    mesh.normals[10] = 1.0;
-    mesh.normals[11] = 0.0;
-    mesh.texcoords[6] = (@as(f32, @floatFromInt(tile_x_pos)) + 1) * tile_width;
-    mesh.texcoords[7] = @as(f32, @floatFromInt(tile_y_pos)) * tile_height;
-
-    mesh.indices[0] = 0;
-    mesh.indices[1] = 1;
-    mesh.indices[2] = 2;
-
-    mesh.indices[3] = 0;
-    mesh.indices[4] = 2;
-    mesh.indices[5] = 3;
-
-    return mesh;
+    mesh.texcoords[index + 6] = (@as(f32, @floatFromInt(tile_x_pos)) + 1) * tile_width;
+    mesh.texcoords[index + 7] = @as(f32, @floatFromInt(tile_y_pos)) * tile_height;
 }
 
 fn genBasicMesh(num_triangles: u32, num_vertices: u32, num_indices: u32) rl.Mesh {
@@ -106,13 +112,15 @@ pub fn main() anyerror!void {
 
     //--------------------------------------------------------------------------------------
 
-    var plane_mesh = genPlaneMesh(7, 4, 32, 32);
+    var plane_mesh = genPlaneMesh();
+    addQuad(0, &plane_mesh);
+    addTextCoords(&plane_mesh, 0, 7, 4, 32, 32);
     rl.uploadMesh(&plane_mesh, false);
 
-    const plane_model = rl.loadModelFromMesh(plane_mesh);
-    defer plane_model.unload();
-
-    plane_model.materials[0].maps[@intFromEnum(rl.MATERIAL_MAP_DIFFUSE)].texture = atlas;
+    var plane_mesh_2 = genPlaneMesh();
+    addQuad(0, &plane_mesh_2);
+    addTextCoords(&plane_mesh_2, 0, 7, 5, 32, 32);
+    rl.uploadMesh(&plane_mesh_2, false);
 
     var atlas_material = rl.loadMaterialDefault();
     atlas_material.maps[@intFromEnum(rl.MATERIAL_MAP_DIFFUSE)].texture = atlas;
@@ -123,7 +131,7 @@ pub fn main() anyerror!void {
         //----------------------------------------------------------------------------------
         // TODO: Update your variables here
         //----------------------------------------------------------------------------------
-        // camera.update(rl.CameraMode.camera_orbital);
+        camera.update(rl.CameraMode.camera_orbital);
 
         // Draw
         //----------------------------------------------------------------------------------
@@ -136,15 +144,8 @@ pub fn main() anyerror!void {
             camera.begin();
             defer camera.end();
 
-            // var vertex = [_]rl.Vector3{
-            //     rl.Vector3.init(0, 0, 0),
-            //     rl.Vector3.init(1, 0, 0),
-            //     rl.Vector3.init(0, 1, 0),
-            //     rl.Vector3.init(1, 1, 0),
-            // };
-            // rl.drawTriangleStrip3D(&vertex, rl.Color.blue);
-            // plane_model.draw(rl.Vector3.init(0, 0, 0), 1, rl.Color.white);
             plane_mesh.draw(atlas_material, rl.Matrix.identity());
+            plane_mesh_2.draw(atlas_material, rl.Matrix.rotateX(std.math.pi / 2.0).multiply(rl.Matrix.translate(0, 1, 0)));
 
             rl.drawGrid(100, 0.25);
         }
