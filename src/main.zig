@@ -1,9 +1,10 @@
 // raylib-zig (c) Nikolas Wipper 2023
 const std = @import("std");
 const rl = @import("raylib");
+const QuadMesh = @import("./QuadMesh.zig");
 
 fn genPlaneMesh() rl.Mesh {
-    return genBasicMesh(2, 4, 6);
+    return QuadMesh.gen_basic_mesh(2, 4, 6);
 }
 
 fn addQuad(index: u32, mesh: *rl.Mesh) void {
@@ -61,30 +62,30 @@ fn addTextCoords(mesh: *rl.Mesh, index: u32, tile_x_pos: u32, tile_y_pos: u32, t
     mesh.texcoords[index + 7] = @as(f32, @floatFromInt(tile_y_pos)) * tile_height;
 }
 
-fn genBasicMesh(num_triangles: u32, num_vertices: u32, num_indices: u32) rl.Mesh {
-    const vertices: *[]f32 = @ptrCast(@alignCast(rl.memAlloc(num_vertices * 3 * @sizeOf(f32))));
-    const normals: *[]f32 = @ptrCast(@alignCast(rl.memAlloc(num_vertices * 3 * @sizeOf(f32))));
-    const texcoords: *[]f32 = @ptrCast(@alignCast(rl.memAlloc(num_vertices * 2 * @sizeOf(f32))));
-    const indices: *[]u16 = @ptrCast(@alignCast(rl.memAlloc(num_indices * @sizeOf(u16))));
-
-    return rl.Mesh{
-        .vertexCount = @intCast(num_vertices),
-        .triangleCount = @intCast(num_triangles),
-        .vertices = @ptrCast(vertices),
-        .texcoords = @ptrCast(texcoords),
-        .texcoords2 = null,
-        .normals = @ptrCast(normals),
-        .tangents = null,
-        .colors = null,
-        .indices = @ptrCast(indices),
-        .animVertices = null,
-        .animNormals = null,
-        .boneIds = null,
-        .boneWeights = null,
-        .vaoId = 0,
-        .vboId = null,
-    };
-}
+// fn genBasicMesh(num_triangles: u32, num_vertices: u32, num_indices: u32) rl.Mesh {
+//     const vertices: *[]f32 = @ptrCast(@alignCast(rl.memAlloc(num_vertices * 3 * @sizeOf(f32))));
+//     const normals: *[]f32 = @ptrCast(@alignCast(rl.memAlloc(num_vertices * 3 * @sizeOf(f32))));
+//     const texcoords: *[]f32 = @ptrCast(@alignCast(rl.memAlloc(num_vertices * 2 * @sizeOf(f32))));
+//     const indices: *[]u16 = @ptrCast(@alignCast(rl.memAlloc(num_indices * @sizeOf(u16))));
+//
+//     return rl.Mesh{
+//         .vertexCount = @intCast(num_vertices),
+//         .triangleCount = @intCast(num_triangles),
+//         .vertices = @ptrCast(vertices),
+//         .texcoords = @ptrCast(texcoords),
+//         .texcoords2 = null,
+//         .normals = @ptrCast(normals),
+//         .tangents = null,
+//         .colors = null,
+//         .indices = @ptrCast(indices),
+//         .animVertices = null,
+//         .animNormals = null,
+//         .boneIds = null,
+//         .boneWeights = null,
+//         .vaoId = 0,
+//         .vboId = null,
+//     };
+// }
 
 pub fn main() anyerror!void {
     // Initialization
