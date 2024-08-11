@@ -6,7 +6,7 @@ fn genPlaneMesh(tile_x_pos: u32, tile_y_pos: u32, tex_cols: u32, tex_rows: u32) 
     const tile_width: f32 = (1.0 / @as(f32, @floatFromInt(tex_cols)));
     const tile_height: f32 = (1.0 / @as(f32, @floatFromInt(tex_rows)));
 
-    var mesh = genBasicMesh(2);
+    var mesh = genBasicMesh(2, 4, 6);
 
     mesh.vertices[0] = 0.0;
     mesh.vertices[1] = 0.0;
@@ -35,42 +35,31 @@ fn genPlaneMesh(tile_x_pos: u32, tile_y_pos: u32, tex_cols: u32, tex_rows: u32) 
     mesh.texcoords[4] = (@as(f32, @floatFromInt(tile_x_pos)) + 1) * tile_width;
     mesh.texcoords[5] = (@as(f32, @floatFromInt(tile_y_pos)) + 1) * tile_height;
 
-    mesh.vertices[9] = 0.0;
+    mesh.vertices[9] = 1.0;
     mesh.vertices[10] = 0.0;
     mesh.vertices[11] = 0.0;
     mesh.normals[9] = 0.0;
     mesh.normals[10] = 1.0;
     mesh.normals[11] = 0.0;
-    mesh.texcoords[6] = @as(f32, @floatFromInt(tile_x_pos)) * tile_width;
+    mesh.texcoords[6] = (@as(f32, @floatFromInt(tile_x_pos)) + 1) * tile_width;
     mesh.texcoords[7] = @as(f32, @floatFromInt(tile_y_pos)) * tile_height;
 
-    mesh.vertices[12] = 1.0;
-    mesh.vertices[13] = 0.0;
-    mesh.vertices[14] = 1.0;
-    mesh.normals[12] = 0.0;
-    mesh.normals[13] = 1.0;
-    mesh.normals[14] = 0.0;
-    mesh.texcoords[8] = (@as(f32, @floatFromInt(tile_x_pos)) + 1) * tile_width;
-    mesh.texcoords[9] = (@as(f32, @floatFromInt(tile_y_pos)) + 1) * tile_height;
+    mesh.indices[0] = 0;
+    mesh.indices[1] = 1;
+    mesh.indices[2] = 2;
 
-    mesh.vertices[15] = 1.0;
-    mesh.vertices[16] = 0.0;
-    mesh.vertices[17] = 0.0;
-    mesh.normals[15] = 0.0;
-    mesh.normals[16] = 1.0;
-    mesh.normals[17] = 0.0;
-    mesh.texcoords[10] = (@as(f32, @floatFromInt(tile_x_pos)) + 1) * tile_width;
-    mesh.texcoords[11] = @as(f32, @floatFromInt(tile_y_pos)) * tile_height;
+    mesh.indices[3] = 0;
+    mesh.indices[4] = 2;
+    mesh.indices[5] = 3;
 
     return mesh;
 }
 
-fn genBasicMesh(num_triangles: u32) rl.Mesh {
-    const num_vertices = num_triangles * 3;
-
+fn genBasicMesh(num_triangles: u32, num_vertices: u32, num_indices: u32) rl.Mesh {
     const vertices: *[]f32 = @ptrCast(@alignCast(rl.memAlloc(num_vertices * 3 * @sizeOf(f32))));
     const normals: *[]f32 = @ptrCast(@alignCast(rl.memAlloc(num_vertices * 3 * @sizeOf(f32))));
     const texcoords: *[]f32 = @ptrCast(@alignCast(rl.memAlloc(num_vertices * 2 * @sizeOf(f32))));
+    const indices: *[]u16 = @ptrCast(@alignCast(rl.memAlloc(num_indices * @sizeOf(u16))));
 
     return rl.Mesh{
         .vertexCount = @intCast(num_vertices),
@@ -81,7 +70,7 @@ fn genBasicMesh(num_triangles: u32) rl.Mesh {
         .normals = @ptrCast(normals),
         .tangents = null,
         .colors = null,
-        .indices = null,
+        .indices = @ptrCast(indices),
         .animVertices = null,
         .animNormals = null,
         .boneIds = null,
